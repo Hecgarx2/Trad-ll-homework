@@ -1,6 +1,5 @@
 import re
 import tkinter as tk
-from tkinter import messagebox, ttk
 import grafo
 import tabla
 
@@ -30,18 +29,21 @@ def validarToken(expression):
 def sintactico():
     expresion = cadena.get()
     tokens = validarToken(expresion)
-    tablaSimbolos(tokens)
+    table = tablaSimbolos(tokens)
     
     for column in table:
-        print(f" | {column.getOp()} | {column.getArg1()} | {column.getArg2()} |")
+        print(f" | {column.getTipo()} | {column.getVal()} |")
 
 def tablaSimbolos(tokens):
+    table = []
     for token in tokens:  # Para cada token en la cadena
         tipo, valor = token
         if tipo != 'DESCONOCIDO':
-            print(f"{tipo} | {valor}")
+            columna = tabla.Columns(tipo, valor)
+            table.append(columna)
         else:
             print(f"Error token desconocido encontrado: {valor}")
+    return table
 
 # ----------Interfaz-------------
 root = tk.Tk()
