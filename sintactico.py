@@ -1,12 +1,11 @@
 import re
 import tkinter as tk
 import grafo
-import tabla
 
 # ----------Analisis sintactico-------------
 # Expresión regular para identificar identificadores y constantes
 
-Error = False
+error = False
 
 token_specification = [
     ('IDENTIFICADOR', r'[a-zA-Z]'),  # Identificador
@@ -29,20 +28,58 @@ def validarToken(expression):
 def sintactico():
     expresion = cadena.get()
     tokens = validarToken(expresion)
-    table = tablaSimbolos(tokens)
-    
-    for column in table:
-        print(f" | {column.getTipo()} | {column.getVal()} |")
+    table = tablaSimbolos(tokens)       #Crea tabla de simbolos
+    if error:
+        print('Error: Token desconocido en la secuencia')
+    else:
+        graph = tablaGrafo(tokens)
+        if error:
+            print('Error: El orden esperado debe ser <oerando> <operador> <operando>')
+        else:
+            for column in table:
+                tipo, valor = column
+                print(f" | {tipo} | {valor} |")
+            for node in graph:
+                print(f" | {node.getOp()} | {node.getArg1()} | {node.getArg2()} |")
+
+def tablaGrafo(tokens):
+    graph = []
+    cont = -1
+    for token in tokens:
+        tipo, valor = token
+        print(f"{tipo} {valor}")
+        '''cont += 1
+        tipo, valor = token
+        if tipo == 'IDENTIFICADOR' or  tipo == 'CONSTANTE':
+            nodo = grafo.Nodo(valor, '', '')
+            graph.append(nodo)
+        elif tipo == 'OPERADOR':
+            try:
+                arg1 = tokens[cont-1]
+                arg2 = tokens[cont+1]
+                tipo1, valor1 = arg1
+                tipo2, valor2 = arg2
+                nodo = grafo.Nodo(valor, valor1, valor2)
+            except:
+                global error 
+                error = True
+                return []'''
+    return graph
 
 def tablaSimbolos(tokens):
     table = []
     for token in tokens:  # Para cada token en la cadena
         tipo, valor = token
-        if tipo != 'DESCONOCIDO':
-            columna = tabla.Columns(tipo, valor)
-            table.append(columna)
-        else:
-            print(f"Error token desconocido encontrado: {valor}")
+        try:
+            if table.index(token):
+                print('Valor existe en la lista')
+        except:
+            if tipo != 'DESCONOCIDO':
+                table.append(token)
+            else:
+                global error 
+                error = True
+                return []
     return table
 
 # ----------Interfaz-------------
